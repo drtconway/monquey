@@ -8,12 +8,13 @@
       <v-container>
         <v-row>
           <v-col cols="4" sm="1" md="2">
-            <v-dialog v-model="dateDialog" max-width="300px">
+            <v-dialog v-model="dateDialog" max-width="290px">
               <v-card>
                 <v-date-picker
                   v-model="tx.date"
                   label="Date"
                   show-adjacent-months
+                  no-title
                   :show-current="true"
                 >
                 </v-date-picker>
@@ -94,8 +95,11 @@
               <v-btn @click="addSplit" x-small><v-icon>mdi-plus</v-icon></v-btn>
             </v-col>
             <v-col cols="1" sm="1" md="1">
-              <v-icon v-if="balanced" raised color="green">mdi-check</v-icon>
-              <v-icon v-else raised color="red">mdi-close</v-icon>
+              <v-icon v-if="balance == 0" raised color="green">mdi-check</v-icon>
+              <template v-else>
+              <v-icon raised color="red">mdi-close</v-icon>
+              {{ Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD' }).format(balance) }}
+              </template>
             </v-col>
           </v-row>
         </template>
@@ -105,7 +109,7 @@
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-      <v-btn color="blue darken-1" text @click="save" :disabled="!balanced">
+      <v-btn color="blue darken-1" text @click="save" :disabled="balance != 0">
         Save
       </v-btn>
     </v-card-actions>
@@ -115,34 +119,40 @@
 <script>
 export default {
   name: "TransactionEditor",
+
+  components: {
+  },
+
   props: {
     original: Object,
     categories: Array,
   },
+
   computed: {
     mycat: {
       get() {
         console.log(this.tx.kind);
-        return this.tx.kind == "split" ? " split " : this.tx.category;
+        return this.tx.kind == "split" ? "Split " : this.tx.category;
       },
       set(cat) {
-        if (cat == " split ") {
+        if (cat == "Split ") {
           this.tx.kind = "split";
-          this.tx.splits = this.splits;
+          this.tx.splits = [...this.splits];
           delete this.tx.category;
         } else {
           this.tx.kind = "single";
           this.tx.category = cat;
-          this.splits = this.tx.splits;
+          this.splits = [...this.tx.splits];
           delete this.tx.splits;
         }
       },
     },
+
     catlist() {
-      return [" split "].concat(this.categories);
+      return ["Split "].concat(this.categories);
     },
 
-    balanced() {
+    balance() {
       if (this.tx.kind == "single") {
         return true;
       }
@@ -152,9 +162,10 @@ export default {
         sum += spl.incoming - spl.outgoing;
       }
       console.log(sum);
-      return this.tx.incoming - this.tx.outgoing - sum == 0;
+      return this.tx.incoming - this.tx.outgoing - sum;
     },
   },
+
   data() {
     return {
       splitHeaders: [
@@ -163,10 +174,11 @@ export default {
         { text: "Incoming", value: "incoming" },
       ],
       tx: {...this.original},
-      split: this.original.kind == "split" ? this.original.splits : [],
+      splits: this.original.kind == "split" ? this.original.splits : [{ category: "", outgoing: 0, incoming: 0 }, { category: "", outgoing: 0, incoming: 0 }],
       dateDialog: false,
     };
   },
+
   methods: {
     save() {
       console.log(JSON.stringify(this.tx));

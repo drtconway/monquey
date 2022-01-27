@@ -12,7 +12,7 @@
     >
       <template v-slot:item.catbrief="{ item }">
         <template v-if="item.kind == 'single'">{{ item.category }}</template>
-        <template v-else> split </template>
+        <template v-else>Split </template>
       </template>
       <template v-slot:top>
         <v-dialog v-model="editDialog">

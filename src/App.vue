@@ -34,14 +34,16 @@
     </v-app-bar>
 
     <v-main>
+      <matching-rules-editor :original="rules" :categories="cats"></matching-rules-editor>
       <TransactionEditor v-if="false" :original="tx" :categories="cats"></TransactionEditor>
-      <AccountView v-if="true" acctName="bank account" :categories="cats" />
+      <AccountView v-if="false" acctName="bank account" :categories="cats" />
     </v-main>
   </v-app>
 </template>
 
 <script>
 import AccountView from "./components/AccountView";
+import MatchingRulesEditor from './components/MatchingRulesEditor';
 import TransactionEditor from "./components/TransactionEditor";
 
 export default {
@@ -50,6 +52,7 @@ export default {
   components: {
     AccountView,
     TransactionEditor,
+    MatchingRulesEditor,
   },
 
   data: () => ({
@@ -72,6 +75,7 @@ export default {
       outgoing: 259.49,
       incoming: 0,
     },
+    rules: [],
     cats: [
       "Everyday Expenses:Alcohol",
       "Everyday Expenses:Banking",

@@ -5,8 +5,9 @@ export interface BaseTransaction {
     payee: string,
     outgoing: number,
     incoming: number,
-    note: string,
-    split: boolean
+    note?: string,
+    reconciled: boolean,
+    split: boolean,
 };
 
 export interface SimpleTransaction extends BaseTransaction {
@@ -21,3 +22,15 @@ export interface SplitTransaction extends BaseTransaction {
 
 export type Transaction = SimpleTransaction | SplitTransaction;
 
+export function makeTransaction() : Transaction {
+    let tx : SimpleTransaction = {
+        date: new Date(),
+        payee: "",
+        outgoing: 0,
+        incoming: 0,
+        reconciled: false,
+        split: false,
+        category: []
+    };
+    return tx;
+}
