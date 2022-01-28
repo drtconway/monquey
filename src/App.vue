@@ -107,8 +107,6 @@ export default {
       "Monthly Bills:Rent/Mortgage",
       "Monthly Bills:Streaming Media",
       "Monthly Bills:Water",
-      "Pre-YNAB Debt:Coles Mastercard",
-      "Pre-YNAB Debt:David Credit",
       "Rainy Day Funds:Birthdays",
       "Rainy Day Funds:Car Insurance",
       "Rainy Day Funds:Car Repairs",

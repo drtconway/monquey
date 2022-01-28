@@ -161,7 +161,6 @@ export default {
         let spl = this.tx.splits[i];
         sum += spl.incoming - spl.outgoing;
       }
-      console.log(sum);
       return this.tx.incoming - this.tx.outgoing - sum;
     },
   },
@@ -181,7 +180,6 @@ export default {
 
   methods: {
     save() {
-      console.log(JSON.stringify(this.tx));
       this.$emit("save", this.tx);
     },
 
@@ -194,7 +192,6 @@ export default {
     },
 
     delSplit(idx) {
-      console.log(`request to delete ${idx}`);
       this.tx.splits.splice(idx, 1);
     },
   },
