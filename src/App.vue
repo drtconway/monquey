@@ -41,82 +41,28 @@
   </v-app>
 </template>
 
-<script>
-import AccountView from "./components/AccountView";
-import MatchingRulesEditor from './components/MatchingRulesEditor';
-import TransactionEditor from "./components/TransactionEditor";
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import AccountView from "./components/AccountView.vue";
+import MatchingRulesEditor from './components/MatchingRulesEditor.vue';
+import TransactionEditor from "./components/TransactionEditor.vue";
+import { Category, categoryList, defaultExpenditureCategories } from './lib/categories';
+import { makeTransaction, SimpleTransaction, Transaction } from './lib/transaction';
 
-export default {
-  name: "App",
-
+@Component({
   components: {
     AccountView,
     TransactionEditor,
-    MatchingRulesEditor,
-  },
+    MatchingRulesEditor
+  }
+})
+export default class App extends Vue {
 
-  data: () => ({
-    tx0: {
-      kind: "single",
-      date: "2020-12-21",
-      payee: "Dan Murphy's",
-      category: "Everyday Expenses:Alcohol",
-      outgoing: 259.49,
-      incoming: 0,
-    },
-    tx: {
-      kind: "split",
-      date: "2020-12-21",
-      payee: "Dan Murphy's",
-      splits: [
-        { category: "Everyday Expenses:Alcohol", outgoing: 159.49, incoming: 0 },
-        { category: "Rainy Day Funds:Christmas", outgoing: 100.0, incoming: 0 }
-      ],
-      outgoing: 259.49,
-      incoming: 0,
-    },
-    rules: [],
-    cats: [
-      "Everyday Expenses:Alcohol",
-      "Everyday Expenses:Banking",
-      "Everyday Expenses:Bike Maintanence",
-      "Everyday Expenses:Car Power",
-      "Everyday Expenses:Clothing",
-      "Everyday Expenses:Dining Out",
-      "Everyday Expenses:Entertainment",
-      "Everyday Expenses:Gaming Subscriptions",
-      "Everyday Expenses:Groceries",
-      "Everyday Expenses:Hobbies",
-      "Everyday Expenses:Household Goods",
-      "Everyday Expenses:Kid Expenses",
-      "Everyday Expenses:Medical",
-      "Everyday Expenses:Property Maintenance",
-      "Everyday Expenses:Restaurants",
-      "Everyday Expenses:School Expenses",
-      "Everyday Expenses:Subscriptions",
-      "Everyday Expenses:Takeaway",
-      "Everyday Expenses:Work Expenses",
-      "Everyday Expenses:Work Lunches",
-      "Income:Available next month",
-      "Income:Available this month",
-      "Monthly Bills:Electricity",
-      "Monthly Bills:Gas",
-      "Monthly Bills:Internet",
-      "Monthly Bills:Phone",
-      "Monthly Bills:Rates",
-      "Monthly Bills:Rent/Mortgage",
-      "Monthly Bills:Streaming Media",
-      "Monthly Bills:Water",
-      "Rainy Day Funds:Birthdays",
-      "Rainy Day Funds:Car Insurance",
-      "Rainy Day Funds:Car Repairs",
-      "Rainy Day Funds:Christmas",
-      "Rainy Day Funds:Health Insurance",
-      "Rainy Day Funds:Public Transport",
-      "Savings Goals:Car Replacement",
-      "Savings Goals:Vacation",
-    ],
-    //
-  }),
+  cats : Category[] = [...categoryList([], defaultExpenditureCategories)];
+
+  tx : Transaction = makeTransaction();
+
+  rules: MatchingRulesEditor[] = [];
+
 };
 </script>

@@ -185,6 +185,14 @@ export class TransactionMaker {
     this.incomeDist = new LogNormal(7, 1.3);
   }
 
+  makeLots(n : number) : Transaction[] {
+    let txs : Transaction[] = [];
+    for (let i = 0; i < n; ++i) {
+        txs.push(this.make());
+    }
+    return txs;
+  }
+
   make(): Transaction {
     let b: boolean = this.rng.random() < 0.85;
     let cat = this.rng.choose(b ? this.cats : this.incs);

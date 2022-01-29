@@ -21,11 +21,7 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="dateDialog = false"
-                  >
+                  <v-btn color="blue darken-1" text @click="dateDialog = false">
                     Ok
                   </v-btn>
                 </v-card-actions>
@@ -95,10 +91,17 @@
               <v-btn @click="addSplit" x-small><v-icon>mdi-plus</v-icon></v-btn>
             </v-col>
             <v-col cols="1" sm="1" md="1">
-              <v-icon v-if="balance == 0" raised color="green">mdi-check</v-icon>
+              <v-icon v-if="balance == 0" raised color="green"
+                >mdi-check</v-icon
+              >
               <template v-else>
-              <v-icon raised color="red">mdi-close</v-icon>
-              {{ Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD' }).format(balance) }}
+                <v-icon raised color="red">mdi-close</v-icon>
+                {{
+                  Intl.NumberFormat("en-AU", {
+                    style: "currency",
+                    currency: "AUD",
+                  }).format(balance)
+                }}
               </template>
             </v-col>
           </v-row>
@@ -116,44 +119,53 @@
   </v-card>
 </template>
 
-<script>
-export default {
-  name: "TransactionEditor",
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Category, CategoryIndex, makeCategoryIndex } from '../lib/categories';
+import { SimpleTransaction, SplitTransaction, Transaction, TransactionSplit } from '../lib/transaction';
 
-  components: {
-  },
+@Component
+export default class TransactionEditor extends Vue {
+  @Prop({required: true}) readonly original! : Transaction;
+  @Prop({required: true}) readonly categories! : Category[];
 
-  props: {
-    original: Object,
-    categories: Array,
-  },
+  readonly splitHeaders : {text: string, value: string}[] =  [
+        { text: "Category", value: "category" },
+        { text: "Outgoing", value: "outgoing" },
+        { text: "Incoming", value: "incoming" },
+      ];
 
-  computed: {
-    mycat: {
-      get() {
-        console.log(this.tx.kind);
-        return this.tx.kind == "split" ? "Split " : this.tx.category;
-      },
-      set(cat) {
-        if (cat == "Split ") {
-          this.tx.kind = "split";
-          this.tx.splits = [...this.splits];
-          delete this.tx.category;
-        } else {
-          this.tx.kind = "single";
-          this.tx.category = cat;
-          this.splits = [...this.tx.splits];
-          delete this.tx.splits;
-        }
-      },
-    },
+  readonly categoryIndex : CategoryIndex = makeCategoryIndex(this.categories);
 
-    catlist() {
-      return ["Split "].concat(this.categories);
-    },
+  tx : Transaction = {...this.original};
 
-    balance() {
-      if (this.tx.kind == "single") {
+  splits : TransactionSplit[] = [];
+
+  dateDialogue : boolean = false;
+
+  get mycat() : string {
+    return this.tx.split == true ? "Split " : this.tx.category.join(' : ');
+  };
+
+  set mycat(cat) {
+    if (cat == "Split ") {
+      this.tx.split = true;
+      this.tx.splits = [...this.splits];
+       delete this.tx.category;
+    } else {
+      this.tx.split = false;
+      this.tx.category = this.categoryIndex[cat];
+      this.splits = [...(this.tx.splits || [])];
+      delete this.tx.splits;
+    }
+  };
+
+    get catlist() : Category[] {
+      return [["Split "]].concat(this.categories);
+    };
+
+    get balance() {
+      if (this.tx.split == false) {
         return true;
       }
       let sum = 0;
@@ -162,38 +174,29 @@ export default {
         sum += spl.incoming - spl.outgoing;
       }
       return this.tx.incoming - this.tx.outgoing - sum;
-    },
-  },
+    }
 
-  data() {
-    return {
-      splitHeaders: [
-        { text: "Category", value: "category" },
-        { text: "Outgoing", value: "outgoing" },
-        { text: "Incoming", value: "incoming" },
-      ],
-      tx: {...this.original},
-      splits: this.original.kind == "split" ? this.original.splits : [{ category: "", outgoing: 0, incoming: 0 }, { category: "", outgoing: 0, incoming: 0 }],
-      dateDialog: false,
-    };
-  },
-
-  methods: {
     save() {
       this.$emit("save", this.tx);
-    },
+    }
 
     close() {
       this.$emit("close");
-    },
+    }
 
     addSplit() {
-      this.tx.splits.push({ category: "", outgoing: 0, incoming: 0 });
-    },
+      if (this.tx.split == false) {
+        throw new Error(`addSplit invoked on non-split transaction.`)
+      }
+      let spl : TransactionSplit = { category: [], outgoing: 0, incoming: 0, note: "" };
+      this.tx.splits.push(spl);
+    }
 
-    delSplit(idx) {
+    delSplit(idx : number) {
+      if (this.tx.split == false) {
+        throw new Error(`delSplit invoked on non-split transaction.`)
+      }
       this.tx.splits.splice(idx, 1);
-    },
-  },
+    }
 };
 </script>

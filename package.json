@@ -14,7 +14,8 @@
     "vue": "^2.6.11",
     "vuedraggable": "^2.24.3",
     "vuetify": "^2.4.0",
-    "vuex": "^3.6.2"
+    "vuex": "^3.6.2",
+    "webpack": "^4.46.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
@@ -22,6 +23,7 @@
     "@types/node": "^17.0.10",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-typescript": "^4.5.15",
     "@vue/cli-service": "~4.5.0",
     "babel-eslint": "^10.1.0",
     "chai": "^4.3.4",
@@ -34,8 +36,11 @@
     "sass-loader": "^10.0.0",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4",
+    "vue-class-component": "^7.2.6",
     "vue-cli-plugin-vuetify": "~2.4.5",
+    "vue-property-decorator": "^9.1.2",
     "vue-template-compiler": "^2.6.11",
+    "vue-ts-plugin": "^0.1.0",
     "vuetify-loader": "^1.7.0"
   },
   "eslintConfig": {

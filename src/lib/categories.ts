@@ -2,6 +2,8 @@ export type Category = string[];
 
 export type CategoryTree = { [name: string]: CategoryTree };
 
+export type CategoryIndex = { [label: string]: Category };
+
 export function addCategory(node: CategoryTree, category: Category): void {
   for (let cat of category) {
     if (!(cat in node)) {
@@ -27,6 +29,15 @@ export function* categoryList(
       yield value;
     }
   }
+}
+
+export function makeCategoryIndex(categories : Category[]) : CategoryIndex {
+    let idx : CategoryIndex = {};
+    for (let category of categories) {
+        let label = category.join(': ');
+        idx[label] = category;
+    }
+    return idx;
 }
 
 export const defaultIncomeCategories : CategoryTree = {

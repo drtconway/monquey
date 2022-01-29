@@ -79,83 +79,78 @@
 
 <style scoped></style>
 
-<script>
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import draggable from "vuedraggable";
+import { Category } from '../lib/categories';
+import { MatchingRule } from '../lib/matching';
 
-export default {
-  name: "MatchingRulesEditor",
-
+@Component({
   components: {
-    draggable,
-  },
+    draggable
+  }
+})
+export default class MatchingRulesEditor extends Vue {
+  @Prop() readonly original! : MatchingRule[];
+  @Prop({required: true}) readonly categories! : Category[];
 
-  props: {
-    original: Array,
-    categories: Array,
-  },
+  rules: MatchingRule[] = [...this.original];
 
-  computed: {},
+  testString: string = "Acme Supermarket Coburg-West VISA 00112233****8899";
 
-  data() {
-    return {
-      rules: [...this.original],
-      testString: "Acme Supermarket Coburg-West VISA 00112233****8899",
-      testPayee: "",
-      testCategory: "",
-      validators: {
-          regex: (value) => {
-              try {
-                new RegExp(value);
-                return true;
-              }
-            catch (err) {
-                return "not a valid regular expression";
-            }
-          }
-      },
-    };
-  },
+  testPayee: string = "";
 
-  methods: {
-    addRule() {
-      this.rules.push({
-        regex: "Acme Supermarket ([^ ]*).*",
-        payee: "Acme Supermarket $1",
-        category: "",
-      });
-    },
+  testCategory: Category = [];
 
-    delRule(idx) {
-      this.rules.splice(idx, 1);
-    },
-
-    testRule(idx) {
-      console.log(`testRule(${idx})`);
-    },
-
-    testRules() {
-      let resPayee = "";
-      let resCategory = "";
-      for (let rule of this.rules) {
-        let re = new RegExp(rule.regex);
-        if (re.exec(this.testString)) {
-          resPayee = this.testString.replace(re, rule.payee);
-          resCategory = rule.category;
-          break;
-        }
+  validators : {[label: string]: (value: string) => (boolean | string)} = {
+    regex: (value) => {
+      try {
+        new RegExp(value);
+        return true;
       }
-      this.testPayee = resPayee;
-      this.testCategory = resCategory;
-    },
+      catch (err) {
+        return "not a valid regular expression";
+      }
+    }
+  }
 
-    save() {
-      console.log(JSON.stringify(this.tx));
-      this.$emit("save", this.tx);
-    },
+  addRule() {
+    this.rules.push({
+      regex: "Acme Supermarket ([^ ]*).*",
+      payee: "Acme Supermarket $1",
+      category: [],
+    });
+  }
 
-    close() {
-      this.$emit("close");
-    },
-  },
+  delRule(idx : number) {
+    this.rules.splice(idx, 1);
+  }
+
+  testRule(idx : number) {
+    console.log(`testRule(${idx})`);
+  }
+
+  testRules() {
+    let resPayee : string = "";
+    let resCategory : Category = [];
+    for (let rule of this.rules) {
+      let re = new RegExp(rule.regex);
+      if (re.exec(this.testString)) {
+        resPayee = this.testString.replace(re, rule.payee);
+        resCategory = rule.category;
+        break;
+      }
+    }
+    this.testPayee = resPayee;
+    this.testCategory = resCategory;
+  }
+
+  save() {
+    this.$emit("save", this.rules);
+  }
+
+  close() {
+    this.$emit("close");
+  }
 };
 </script>
